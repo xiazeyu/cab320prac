@@ -203,6 +203,8 @@ def play_multiple_episodes(env, n_episodes, n_max_steps, model, loss_fn):
         obs, info = env.reset()
         for step in range(n_max_steps):
             obs, reward, done, grads = play_one_step(env, obs, model, loss_fn)
+            # reward = reward + (2.4-np.abs(obs[0]))/2.4 + (0.2095-np.abs(obs[2]))/0.2095
+            reward = reward - np.abs(obs[0])/2.4 + (0.2095-np.abs(obs[2]))/0.2095
             current_rewards.append(reward)
             current_grads.append(grads)
             if done:
@@ -231,8 +233,10 @@ n_iterations = 150
 n_episodes_per_update = 10
 n_max_steps = 200
 discount_rate = 0.95
-optimizer = keras.optimizers.legacy.Adam(learning_rate=0.01)
+optimizer = keras.optimizers.Adam(learning_rate=0.01)
 loss_fn = keras.losses.binary_crossentropy
+
+# model = tf.keras.models.load_model('pg_prac.h5')
 
 def do_training():
     keras.backend.clear_session()
@@ -257,15 +261,15 @@ def do_training():
                      for step, final_reward in enumerate(final_rewards)], axis=0)
             all_mean_grads.append(mean_grads)
         optimizer.apply_gradients(zip(all_mean_grads, model.trainable_variables))
-    
+        model.save('pg_prac.h5', overwrite=True)
+
     env.close()
 
 # ------------------------------------------   
 
 if __name__=='__main__':
-    collect_stats_simple_strategy()    
-    view_one_episode_basic()
-    view_one_episode_initial_policy_net()
+    # collect_stats_simple_strategy()    
+    # view_one_episode_basic()
+    # view_one_episode_initial_policy_net()
     do_training()
-    model.save('pg_prac.h5', overwrite=True)
     view_one_episode_initial_policy_net()
