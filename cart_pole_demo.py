@@ -40,6 +40,6 @@ def render_policy_net(model, n_max_steps=200, seed=42):
     
 
 for iteration in tqdm.trange(10):
-    render_policy_net(model, 1000, None)
+    render_policy_net(model, 300, None)
 
 env.close()
