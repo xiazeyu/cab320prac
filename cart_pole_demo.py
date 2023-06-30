@@ -26,11 +26,11 @@ def render_policy_net(model, n_max_steps=200, seed=42):
     if seed is not None:
         np.random.seed(seed)
     obs, info = env.reset(seed=seed)
-    for step in range(n_max_steps): # tqdm.trange(n_max_steps):
+    for step in tqdm.trange(n_max_steps):
         frames.append(env.render())
         left_proba = model.predict(obs.reshape(1, -1))
         action = int(np.random.rand() > left_proba)
-        print(action)
+        # print(action)
         obs, reward, terminated, truncated, info = env.step(action)
         done = truncated or terminated
         if done:
@@ -40,6 +40,6 @@ def render_policy_net(model, n_max_steps=200, seed=42):
     
 
 for iteration in tqdm.trange(10):
-    render_policy_net(model, 200, None)
+    render_policy_net(model, 1000, None)
 
 env.close()
